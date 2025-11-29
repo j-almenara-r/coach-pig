@@ -229,7 +229,8 @@ def generate_markdown(players: List[str], filename: str = None) -> str:
     
     for slot_idx, entry in enumerate(schedule):
         current_players_set = set(entry['players'])
-        new_players = list(current_players_set)
+        # Sort for deterministic ordering
+        new_players = sorted(current_players_set)
         
         if slot_idx == 0:
             # First slot - assign initial positions
@@ -241,20 +242,22 @@ def generate_markdown(players: List[str], filename: str = None) -> str:
             prev_players_set = set(current_positions)
             leaving = prev_players_set - current_players_set
             entering = current_players_set - prev_players_set
-            entering_list = list(entering)
+            # Sort for deterministic ordering
+            entering_list = sorted(entering)
+            
+            # The number of entering players should equal leaving players
+            assert len(entering_list) == len(leaving), \
+                f"Mismatch: {len(entering_list)} entering vs {len(leaving)} leaving"
             
             # Update positions: keep players who stay, replace those who leave
             entering_idx = 0
             for pos in range(PLAYERS_ON_COURT):
                 if current_positions[pos] in leaving:
                     # This player is leaving, replace with someone entering
-                    if entering_idx < len(entering_list):
-                        new_player = entering_list[entering_idx]
-                        entering_idx += 1
-                        current_positions[pos] = new_player
-                        position_rows[pos].append(new_player)
-                    else:
-                        position_rows[pos].append("")
+                    new_player = entering_list[entering_idx]
+                    entering_idx += 1
+                    current_positions[pos] = new_player
+                    position_rows[pos].append(new_player)
                 else:
                     # Player stays - empty cell
                     position_rows[pos].append("")

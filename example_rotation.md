@@ -12,11 +12,11 @@
 
 | Q1T1 | Q1T2 | Q1T3 | Q1T4 | Q2T1 | Q2T2 | Q2T3 | Q2T4 | Q3T1 | Q3T2 | Q3T3 | Q3T4 | Q4T1 | Q4T2 | Q4T3 | Q4T4 |
 |------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|
-|Ismael|Sergio|Ana|Sergio||Jesús A.R.||Ana||Sergio|Ana|Sergio||Jesús A.R.||Ana|
-|Javi A.||Ismael||Ana||Sergio||Jesús A.R.|Jose||Javi A.|Ana||Sergio||
-|Pedro||Jesús A.R.||Jose|Ismael|Jose||Javi A.||Ismael||Jose|Ismael|Jose||
-|Ana|Jose||Javi A.|Javi F||Pedro|Ismael||Javi F||Pedro||Javi A.||Ismael|
-|Jesús A.R.|Javi F||Pedro||Javi A.||Javi F|Pedro||Jesús A.R.||Javi F||Pedro|Javi F|
+|Ana|Javi F||Javi A.|Ana||Jose||Javi A.||Ana|Javi A.|Ana||Jose||
+|Ismael|Jose||Pedro||Ismael|Pedro|Ana||Javi F||Pedro||Ismael|Pedro|Ana|
+|Javi A.||Ana|Sergio||Javi A.||Ismael||Jose||Sergio||Javi A.||Ismael|
+|Jesús A.R.|Sergio|Ismael||Javi F||Sergio||Jesús A.R.|Sergio|Ismael||Javi F||Sergio||
+|Pedro||Jesús A.R.||Jose|Jesús A.R.||Javi F|Pedro||Jesús A.R.||Jose|Jesús A.R.||Javi F|
 
 ## Player Minutes Summary
 
