@@ -44,6 +44,9 @@ def calculate_rotation_schedule(players: List[str]) -> Tuple[List[List[str]], fl
     minutes_per_player = total_court_minutes / num_players
     
     # Use fixed 2.5 minute slots
+    # Validate that game duration divides evenly by slot duration
+    if GAME_DURATION_MINUTES % MIN_STINT_DURATION != 0:
+        raise ValueError(f"Game duration ({GAME_DURATION_MINUTES}) must be divisible by slot duration ({MIN_STINT_DURATION})")
     num_slots = int(GAME_DURATION_MINUTES / MIN_STINT_DURATION)
     actual_slot_duration = MIN_STINT_DURATION
     
