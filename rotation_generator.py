@@ -22,12 +22,12 @@ PLAYERS_ON_COURT = 5
 MIN_STINT_DURATION = 2.5
 
 
-def calculate_rotation_schedule(num_players: int) -> Tuple[List[List[str]], float, float]:
+def calculate_rotation_schedule(players: List[str]) -> Tuple[List[List[str]], float, float]:
     """
-    Calculate the rotation schedule for a given number of players.
+    Calculate the rotation schedule for a given list of players.
     
     Args:
-        num_players: Total number of players attending the game
+        players: List of player names attending the game
         
     Returns:
         A tuple containing:
@@ -35,6 +35,7 @@ def calculate_rotation_schedule(num_players: int) -> Tuple[List[List[str]], floa
         - Minutes per player
         - Stint duration
     """
+    num_players = len(players)
     if num_players < PLAYERS_ON_COURT:
         raise ValueError(f"Need at least {PLAYERS_ON_COURT} players to play basketball")
     
@@ -42,55 +43,12 @@ def calculate_rotation_schedule(num_players: int) -> Tuple[List[List[str]], floa
     total_court_minutes = GAME_DURATION_MINUTES * PLAYERS_ON_COURT  # 200 player-minutes
     minutes_per_player = total_court_minutes / num_players
     
-    # Calculate the number of slots needed
-    # We need enough slots so that all players can have balanced playing time
-    # The number of slots should allow each player to play roughly equal time
-    
-    # For balanced rotation, we need slots where num_players / PLAYERS_ON_COURT
-    # determines how we cycle through players
-    ratio = num_players / PLAYERS_ON_COURT
-    
-    # Calculate ideal slot count that allows for even distribution
-    # and respects the minimum stint duration
-    max_slots = int(GAME_DURATION_MINUTES / MIN_STINT_DURATION)
-    
-    # Find optimal number of slots that gives even distribution
-    # We want slots that divide evenly into player combinations
-    best_slots = 4  # Start with quarters
-    best_variance = float('inf')
-    
-    for test_slots in range(4, max_slots + 1):
-        slot_duration = GAME_DURATION_MINUTES / test_slots
-        if slot_duration < MIN_STINT_DURATION:
-            break
-        
-        # Simulate this slot count
-        test_schedule = []
-        test_played = {i: 0 for i in range(num_players)}
-        
-        for s in range(test_slots):
-            # Select 5 players with least time so far
-            sorted_players = sorted(range(num_players), key=lambda p: (test_played[p], p))
-            on_court = sorted_players[:PLAYERS_ON_COURT]
-            for p in on_court:
-                test_played[p] += 1
-            test_schedule.append(on_court)
-        
-        # Calculate variance in playing time
-        times = [test_played[p] * slot_duration for p in range(num_players)]
-        avg_time = sum(times) / len(times)
-        variance = sum((t - avg_time) ** 2 for t in times) / len(times)
-        
-        if variance < best_variance:
-            best_variance = variance
-            best_slots = test_slots
-    
-    # Use the optimal number of slots
-    num_slots = best_slots
-    actual_slot_duration = GAME_DURATION_MINUTES / num_slots
-    
-    # Create player list
-    players = [f"Player {i+1}" for i in range(num_players)]
+    # Use fixed 2.5 minute slots
+    # Validate that game duration divides evenly by slot duration
+    if GAME_DURATION_MINUTES % MIN_STINT_DURATION != 0:
+        raise ValueError(f"Game duration ({GAME_DURATION_MINUTES}) must be divisible by slot duration ({MIN_STINT_DURATION})")
+    num_slots = int(GAME_DURATION_MINUTES / MIN_STINT_DURATION)
+    actual_slot_duration = MIN_STINT_DURATION
     
     # Generate rotation using balanced round-robin approach
     schedule = []
@@ -120,12 +78,12 @@ def calculate_rotation_schedule(num_players: int) -> Tuple[List[List[str]], floa
     return schedule, minutes_per_player, actual_slot_duration
 
 
-def generate_detailed_schedule(num_players: int) -> Tuple[List[dict], float, float]:
+def generate_detailed_schedule(players: List[str]) -> Tuple[List[dict], float, float]:
     """
     Generate a detailed schedule with time ranges and quarter information.
     
     Args:
-        num_players: Total number of players attending
+        players: List of player names attending
         
     Returns:
         Tuple containing:
@@ -133,7 +91,7 @@ def generate_detailed_schedule(num_players: int) -> Tuple[List[dict], float, flo
         - Minutes per player
         - Slot duration
     """
-    schedule, minutes_per_player, slot_duration = calculate_rotation_schedule(num_players)
+    schedule, minutes_per_player, slot_duration = calculate_rotation_schedule(players)
     
     detailed = []
     for slot_idx, players_on_court in enumerate(schedule):
@@ -148,7 +106,7 @@ def generate_detailed_schedule(num_players: int) -> Tuple[List[dict], float, flo
             'end_time': end_time,
             'duration': slot_duration,
             'players': players_on_court,
-            'on_bench': [f"Player {i+1}" for i in range(num_players) if f"Player {i+1}" not in players_on_court]
+            'on_bench': [p for p in players if p not in players_on_court]
         })
     
     return detailed, minutes_per_player, slot_duration
@@ -162,18 +120,19 @@ def format_time(minutes: float) -> str:
     return f"{mins:02d}:{secs:02d}"
 
 
-def generate_csv(num_players: int, filename: str = None) -> str:
+def generate_csv(players: List[str], filename: str = None) -> str:
     """
     Generate a CSV file with the rotation schedule.
     
     Args:
-        num_players: Total number of players attending
+        players: List of player names attending
         filename: Output filename (optional, will print to stdout if not provided)
         
     Returns:
         CSV content as string
     """
-    schedule, minutes_per_player, slot_duration = generate_detailed_schedule(num_players)
+    num_players = len(players)
+    schedule, minutes_per_player, slot_duration = generate_detailed_schedule(players)
     
     output_lines = []
     
@@ -185,7 +144,7 @@ def generate_csv(num_players: int, filename: str = None) -> str:
     
     # CSV header
     header = ["Slot", "Quarter", "Start", "End", "Duration (min)"]
-    header.extend([f"Player {i+1}" for i in range(num_players)])
+    header.extend(players)
     output_lines.append(",".join(header))
     
     # Data rows
@@ -198,9 +157,8 @@ def generate_csv(num_players: int, filename: str = None) -> str:
             f"{entry['duration']:.1f}"
         ]
         # Mark which players are on court (1) or bench (0)
-        for i in range(num_players):
-            player_name = f"Player {i+1}"
-            row.append("1" if player_name in entry['players'] else "0")
+        for player in players:
+            row.append("1" if player in entry['players'] else "0")
         
         output_lines.append(",".join(row))
     
@@ -214,18 +172,19 @@ def generate_csv(num_players: int, filename: str = None) -> str:
     return content
 
 
-def generate_markdown(num_players: int, filename: str = None) -> str:
+def generate_markdown(players: List[str], filename: str = None) -> str:
     """
     Generate a Markdown table with the rotation schedule.
     
     Args:
-        num_players: Total number of players attending
+        players: List of player names attending
         filename: Output filename (optional)
         
     Returns:
         Markdown content as string
     """
-    schedule, minutes_per_player, slot_duration = generate_detailed_schedule(num_players)
+    num_players = len(players)
+    schedule, minutes_per_player, slot_duration = generate_detailed_schedule(players)
     
     lines = []
     
@@ -241,32 +200,62 @@ def generate_markdown(num_players: int, filename: str = None) -> str:
     lines.append(f"- **Number of rotations:** {len(schedule)}")
     lines.append("")
     
-    # Rotation table
-    lines.append("## Rotation Schedule")
-    lines.append("")
+    # Calculate slots per quarter (using floor division for safety)
+    slots_per_quarter = int(QUARTER_DURATION // slot_duration)
     
-    # Table header
-    header = "| Slot | Quarter | Time | "
-    header += " | ".join([f"P{i+1}" for i in range(num_players)])
-    header += " |"
-    lines.append(header)
-    
-    # Separator
-    separator = "|------|---------|------|"
-    separator += "|".join(["----" for _ in range(num_players)])
-    separator += "|"
-    lines.append(separator)
-    
-    # Data rows
-    for entry in schedule:
-        time_range = f"{format_time(entry['start_time'])}-{format_time(entry['end_time'])}"
-        row = f"| {entry['slot']} | Q{entry['quarter']} | {time_range} |"
-        for i in range(num_players):
-            player_name = f"Player {i+1}"
-            row += " ✅ |" if player_name in entry['players'] else " ⬜ |"
-        lines.append(row)
-    
-    lines.append("")
+    # Generate one table per quarter showing player changes
+    for quarter in range(1, QUARTERS + 1):
+        lines.append(f"## Quarter {quarter}")
+        lines.append("")
+        
+        # Get slots for this quarter with bounds checking
+        start_slot = (quarter - 1) * slots_per_quarter
+        end_slot = min(quarter * slots_per_quarter, len(schedule))
+        quarter_schedule = schedule[start_slot:end_slot]
+        
+        # Table header with time slots
+        header = "| Player |"
+        for slot_num in range(1, len(quarter_schedule) + 1):
+            header += f" T{slot_num} |"
+        lines.append(header)
+        
+        # Separator
+        separator = "|--------|"
+        separator += "|".join(["----" for _ in range(len(quarter_schedule))])
+        separator += "|"
+        lines.append(separator)
+        
+        # Track previous slot's on-court players for change detection
+        prev_on_court = set()
+        if start_slot > 0:
+            prev_on_court = set(schedule[start_slot - 1]['players'])
+        
+        # For each player, show their status changes
+        for player in players:
+            row = f"| {player} |"
+            prev_playing = player in prev_on_court
+            
+            for slot_idx, entry in enumerate(quarter_schedule):
+                current_playing = player in entry['players']
+                
+                if current_playing and not prev_playing:
+                    # Player coming IN
+                    row += " 🟢 IN |"
+                elif not current_playing and prev_playing:
+                    # Player going OUT
+                    row += " 🔴 OUT |"
+                elif current_playing:
+                    # Player continues playing
+                    row += " ✅ |"
+                else:
+                    # Player on bench
+                    row += " ⬜ |"
+                
+                prev_playing = current_playing
+            
+            lines.append(row)
+        
+        lines.append("")
     
     # Per-player summary
     lines.append("## Player Minutes Summary")
@@ -275,8 +264,8 @@ def generate_markdown(num_players: int, filename: str = None) -> str:
     lines.append("|--------|---------------|--------|")
     
     # Calculate actual minutes per player
-    player_minutes = {f"Player {i+1}": 0 for i in range(num_players)}
-    player_stints = {f"Player {i+1}": 0 for i in range(num_players)}
+    player_minutes = {p: 0 for p in players}
+    player_stints = {p: 0 for p in players}
     
     prev_on_court = set()
     for entry in schedule:
@@ -287,8 +276,7 @@ def generate_markdown(num_players: int, filename: str = None) -> str:
                 player_stints[player] += 1
         prev_on_court = current_on_court
     
-    for i in range(num_players):
-        player = f"Player {i+1}"
+    for player in players:
         lines.append(f"| {player} | {player_minutes[player]:.1f} | {player_stints[player]} |")
     
     lines.append("")
@@ -307,20 +295,21 @@ def generate_markdown(num_players: int, filename: str = None) -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate basketball rotation schedule for a given number of players",
+        description="Generate basketball rotation schedule for a list of players",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python rotation_generator.py 8
-  python rotation_generator.py 10 --output rotation
-  python rotation_generator.py 12 --format markdown --output schedule
+  python rotation_generator.py "Pedro" "Javi A." "Jesús" "Ismael" "Ana"
+  python rotation_generator.py "Player1" "Player2" "Player3" "Player4" "Player5" "Player6" --output rotation
+  python rotation_generator.py "Ana" "Bob" "Carlos" "Diana" "Eva" "Frank" --format markdown --output schedule
         """
     )
     
     parser.add_argument(
         "players",
-        type=int,
-        help="Number of players attending the game (minimum 5)"
+        nargs='+',
+        type=str,
+        help="List of player names attending the game (minimum 5)"
     )
     
     parser.add_argument(
@@ -344,12 +333,15 @@ Examples:
     
     args = parser.parse_args()
     
+    players = args.players
+    num_players = len(players)
+    
     # Validate player count
-    if args.players < PLAYERS_ON_COURT:
+    if num_players < PLAYERS_ON_COURT:
         print(f"Error: Need at least {PLAYERS_ON_COURT} players for basketball", file=sys.stderr)
         sys.exit(1)
     
-    if args.players > 20:
+    if num_players > 20:
         print("Warning: More than 20 players may result in very short stints", file=sys.stderr)
     
     # Generate output
@@ -358,11 +350,11 @@ Examples:
     
     if args.format in ["csv", "both"]:
         csv_filename = f"{args.output}.csv" if args.output else None
-        csv_content = generate_csv(args.players, csv_filename)
+        csv_content = generate_csv(players, csv_filename)
     
     if args.format in ["markdown", "both"]:
         md_filename = f"{args.output}.md" if args.output else None
-        md_content = generate_markdown(args.players, md_filename)
+        md_content = generate_markdown(players, md_filename)
     
     # Print to console if requested or no output file specified
     if args.print or not args.output:
@@ -371,7 +363,7 @@ Examples:
         elif md_content:
             print(md_content)
     
-    print(f"\n✅ Rotation schedule generated for {args.players} players")
+    print(f"\n✅ Rotation schedule generated for {num_players} players")
 
 
 if __name__ == "__main__":
