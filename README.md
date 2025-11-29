@@ -9,8 +9,8 @@ A basketball rotation generator that creates fair playing time schedules for all
 
 - **Game Configuration**: 40-minute game divided into 4 quarters (10 minutes each)
 - **Fair Distribution**: Evenly distributes playing time among all players
-- **Balanced Stints**: Ensures similar stint and rest period lengths
-- **Minimum Stint Duration**: 2.5 minutes minimum per stint
+- **Balanced Stints**: Uses 2.5-minute time slots for granular rotation control
+- **Player Names**: Accepts actual player names for readable output tables
 - **Multiple Outputs**: Generates both CSV and Markdown formats
 
 ### Requirements
@@ -22,23 +22,23 @@ A basketball rotation generator that creates fair playing time schedules for all
 
 ```bash
 # Basic usage - outputs to console
-python rotation_generator.py <number_of_players>
+python rotation_generator.py "Player1" "Player2" "Player3" "Player4" "Player5"
 
 # Generate output files
-python rotation_generator.py <number_of_players> --output <filename>
+python rotation_generator.py "Pedro" "Javi A." "Jesús" "Ismael" "Ana" --output rotation
 
 # Examples
-python rotation_generator.py 8                      # 8 players, console output
-python rotation_generator.py 10 --output rotation   # 10 players, creates rotation.csv and rotation.md
-python rotation_generator.py 12 --format csv        # 12 players, CSV format only
-python rotation_generator.py 9 --format markdown    # 9 players, Markdown format only
+python rotation_generator.py "Pedro" "Javi A." "Jesús A.R." "Ismael" "Ana" "Javi F" "Jose" "Sergio"
+python rotation_generator.py "Ana" "Bob" "Carlos" "Diana" "Eva" "Frank" --output rotation
+python rotation_generator.py "Player1" "Player2" "Player3" "Player4" "Player5" "Player6" --format csv
+python rotation_generator.py "A" "B" "C" "D" "E" "F" "G" --format markdown
 ```
 
 ### Command Line Options
 
 | Option | Description |
 |--------|-------------|
-| `players` | Number of players attending (required, minimum 5) |
+| `players` | List of player names attending (required, minimum 5) |
 | `--format` | Output format: `csv`, `markdown`, or `both` (default: both) |
 | `--output`, `-o` | Base filename for output files (without extension) |
 | `--print` | Print output to console even when writing files |
@@ -58,7 +58,7 @@ The Markdown file includes:
 
 ### Example Output
 
-For 8 players:
+For 8 players (Pedro, Javi A., Jesús A.R., Ismael, Ana, Javi F, Jose, Sergio):
 ```
 # Rotation Schedule - 8 Players
 
@@ -66,12 +66,12 @@ For 8 players:
 - **Total game duration:** 40 minutes (4 quarters)
 - **Players attending:** 8
 - **Minutes per player:** 25.0
-- **Stint duration:** 5.0 minutes
-- **Number of rotations:** 8
+- **Stint duration:** 2.5 minutes
+- **Number of rotations:** 16
 
-| Slot | Quarter | Time | P1 | P2 | P3 | P4 | P5 | P6 | P7 | P8 |
-|------|---------|------|----|----|----|----|----|----|----|----|
-| 1 | Q1 | 00:00-05:00 | ✅ | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ |
-| 2 | Q1 | 05:00-10:00 | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ✅ | ✅ |
+| Slot | Quarter | Time | Pedro | Javi A. | Jesús A.R. | Ismael | Ana | Javi F | Jose | Sergio |
+|------|---------|------|-------|---------|------------|--------|-----|--------|------|--------|
+| 1 | Q1 | 00:00-02:30 | ✅ | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ |
+| 2 | Q1 | 02:30-05:00 | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ✅ | ✅ |
 ...
 ```
