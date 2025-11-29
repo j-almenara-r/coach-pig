@@ -8,57 +8,15 @@
 - **Stint duration:** 2.5 minutes
 - **Number of rotations:** 16
 
-## Quarter 1
+## Rotation Table
 
-| Player | T1 | T2 | T3 | T4 |
-|--------|----|----|----|----|
-| Pedro | 🟢 IN | ✅ | 🔴 OUT | 🟢 IN |
-| Javi A. | 🟢 IN | ✅ | 🔴 OUT | 🟢 IN |
-| Jesús A.R. | 🟢 IN | 🔴 OUT | 🟢 IN | ✅ |
-| Ismael | 🟢 IN | 🔴 OUT | 🟢 IN | ✅ |
-| Ana | 🟢 IN | 🔴 OUT | 🟢 IN | 🔴 OUT |
-| Javi F | ⬜ | 🟢 IN | ✅ | 🔴 OUT |
-| Jose | ⬜ | 🟢 IN | ✅ | 🔴 OUT |
-| Sergio | ⬜ | 🟢 IN | 🔴 OUT | 🟢 IN |
-
-## Quarter 2
-
-| Player | T1 | T2 | T3 | T4 |
-|--------|----|----|----|----|
-| Pedro | ✅ | 🔴 OUT | 🟢 IN | 🔴 OUT |
-| Javi A. | 🔴 OUT | 🟢 IN | ✅ | 🔴 OUT |
-| Jesús A.R. | 🔴 OUT | 🟢 IN | ✅ | 🔴 OUT |
-| Ismael | 🔴 OUT | 🟢 IN | 🔴 OUT | 🟢 IN |
-| Ana | 🟢 IN | ✅ | 🔴 OUT | 🟢 IN |
-| Javi F | 🟢 IN | ✅ | 🔴 OUT | 🟢 IN |
-| Jose | 🟢 IN | 🔴 OUT | 🟢 IN | ✅ |
-| Sergio | ✅ | 🔴 OUT | 🟢 IN | ✅ |
-
-## Quarter 3
-
-| Player | T1 | T2 | T3 | T4 |
-|--------|----|----|----|----|
-| Pedro | 🟢 IN | ✅ | 🔴 OUT | 🟢 IN |
-| Javi A. | 🟢 IN | ✅ | 🔴 OUT | 🟢 IN |
-| Jesús A.R. | 🟢 IN | 🔴 OUT | 🟢 IN | ✅ |
-| Ismael | ✅ | 🔴 OUT | 🟢 IN | ✅ |
-| Ana | ✅ | 🔴 OUT | 🟢 IN | 🔴 OUT |
-| Javi F | 🔴 OUT | 🟢 IN | ✅ | 🔴 OUT |
-| Jose | 🔴 OUT | 🟢 IN | ✅ | 🔴 OUT |
-| Sergio | 🔴 OUT | 🟢 IN | 🔴 OUT | 🟢 IN |
-
-## Quarter 4
-
-| Player | T1 | T2 | T3 | T4 |
-|--------|----|----|----|----|
-| Pedro | ✅ | 🔴 OUT | 🟢 IN | 🔴 OUT |
-| Javi A. | 🔴 OUT | 🟢 IN | ✅ | 🔴 OUT |
-| Jesús A.R. | 🔴 OUT | 🟢 IN | ✅ | 🔴 OUT |
-| Ismael | 🔴 OUT | 🟢 IN | 🔴 OUT | 🟢 IN |
-| Ana | 🟢 IN | ✅ | 🔴 OUT | 🟢 IN |
-| Javi F | 🟢 IN | ✅ | 🔴 OUT | 🟢 IN |
-| Jose | 🟢 IN | 🔴 OUT | 🟢 IN | ✅ |
-| Sergio | ✅ | 🔴 OUT | 🟢 IN | ✅ |
+| Q1T1 | Q1T2 | Q1T3 | Q1T4 | Q2T1 | Q2T2 | Q2T3 | Q2T4 | Q3T1 | Q3T2 | Q3T3 | Q3T4 | Q4T1 | Q4T2 | Q4T3 | Q4T4 |
+|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|
+|Ismael|Sergio|Ana|Sergio||Jesús A.R.||Ana||Sergio|Ana|Sergio||Jesús A.R.||Ana|
+|Javi A.||Ismael||Ana||Sergio||Jesús A.R.|Jose||Javi A.|Ana||Sergio||
+|Pedro||Jesús A.R.||Jose|Ismael|Jose||Javi A.||Ismael||Jose|Ismael|Jose||
+|Ana|Jose||Javi A.|Javi F||Pedro|Ismael||Javi F||Pedro||Javi A.||Ismael|
+|Jesús A.R.|Javi F||Pedro||Javi A.||Javi F|Pedro||Jesús A.R.||Javi F||Pedro|Javi F|
 
 ## Player Minutes Summary
 
