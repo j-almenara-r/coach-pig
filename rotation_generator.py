@@ -10,8 +10,6 @@ Minimum stint duration: 2.5 minutes
 """
 
 import argparse
-import csv
-import math
 import sys
 from typing import List, Tuple
 
@@ -122,7 +120,7 @@ def calculate_rotation_schedule(num_players: int) -> Tuple[List[List[str]], floa
     return schedule, minutes_per_player, actual_slot_duration
 
 
-def generate_detailed_schedule(num_players: int) -> List[dict]:
+def generate_detailed_schedule(num_players: int) -> Tuple[List[dict], float, float]:
     """
     Generate a detailed schedule with time ranges and quarter information.
     
@@ -130,7 +128,10 @@ def generate_detailed_schedule(num_players: int) -> List[dict]:
         num_players: Total number of players attending
         
     Returns:
-        List of dictionaries with schedule details
+        Tuple containing:
+        - List of dictionaries with schedule details
+        - Minutes per player
+        - Slot duration
     """
     schedule, minutes_per_player, slot_duration = calculate_rotation_schedule(num_players)
     
@@ -150,7 +151,7 @@ def generate_detailed_schedule(num_players: int) -> List[dict]:
             'on_bench': [f"Player {i+1}" for i in range(num_players) if f"Player {i+1}" not in players_on_court]
         })
     
-    return detailed
+    return detailed, minutes_per_player, slot_duration
 
 
 def format_time(minutes: float) -> str:
@@ -172,8 +173,7 @@ def generate_csv(num_players: int, filename: str = None) -> str:
     Returns:
         CSV content as string
     """
-    schedule = generate_detailed_schedule(num_players)
-    _, minutes_per_player, slot_duration = calculate_rotation_schedule(num_players)
+    schedule, minutes_per_player, slot_duration = generate_detailed_schedule(num_players)
     
     output_lines = []
     
@@ -225,8 +225,7 @@ def generate_markdown(num_players: int, filename: str = None) -> str:
     Returns:
         Markdown content as string
     """
-    schedule = generate_detailed_schedule(num_players)
-    _, minutes_per_player, slot_duration = calculate_rotation_schedule(num_players)
+    schedule, minutes_per_player, slot_duration = generate_detailed_schedule(num_players)
     
     lines = []
     
