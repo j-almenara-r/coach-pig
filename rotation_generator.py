@@ -203,59 +203,73 @@ def generate_markdown(players: List[str], filename: str = None) -> str:
     # Calculate slots per quarter (using floor division for safety)
     slots_per_quarter = int(QUARTER_DURATION // slot_duration)
     
-    # Generate one table per quarter showing player changes
+    # Generate single table with all quarters showing substitutions
+    lines.append("## Rotation Table")
+    lines.append("")
+    
+    # Build header with Q1T1, Q1T2, ... Q4T4 format
+    header = "|"
     for quarter in range(1, QUARTERS + 1):
-        lines.append(f"## Quarter {quarter}")
-        lines.append("")
+        for slot in range(1, slots_per_quarter + 1):
+            header += f" Q{quarter}T{slot} |"
+    lines.append(header)
+    
+    # Separator row
+    separator = "|"
+    for _ in range(QUARTERS * slots_per_quarter):
+        separator += "------|"
+    lines.append(separator)
+    
+    # Build a matrix of players by position for each time slot
+    # Each row represents a court position (1-5)
+    # Show player name only when there's a substitution (change from previous slot)
+    # Maintain stable positions: players stay in same position if still on court
+    position_rows = [[] for _ in range(PLAYERS_ON_COURT)]  # 5 rows for 5 positions
+    current_positions = [None] * PLAYERS_ON_COURT  # Track who is in each position
+    
+    for slot_idx, entry in enumerate(schedule):
+        current_players_set = set(entry['players'])
+        # Sort for deterministic ordering
+        new_players = sorted(current_players_set)
         
-        # Get slots for this quarter with bounds checking
-        start_slot = (quarter - 1) * slots_per_quarter
-        end_slot = min(quarter * slots_per_quarter, len(schedule))
-        quarter_schedule = schedule[start_slot:end_slot]
-        
-        # Table header with time slots
-        header = "| Player |"
-        for slot_num in range(1, len(quarter_schedule) + 1):
-            header += f" T{slot_num} |"
-        lines.append(header)
-        
-        # Separator
-        separator = "|--------|"
-        separator += "|".join(["----" for _ in range(len(quarter_schedule))])
-        separator += "|"
-        lines.append(separator)
-        
-        # Track previous slot's on-court players for change detection
-        prev_on_court = set()
-        if start_slot > 0:
-            prev_on_court = set(schedule[start_slot - 1]['players'])
-        
-        # For each player, show their status changes
-        for player in players:
-            row = f"| {player} |"
-            prev_playing = player in prev_on_court
+        if slot_idx == 0:
+            # First slot - assign initial positions
+            for pos in range(PLAYERS_ON_COURT):
+                current_positions[pos] = new_players[pos]
+                position_rows[pos].append(new_players[pos])
+        else:
+            # Find players leaving and entering
+            prev_players_set = set(current_positions)
+            leaving = prev_players_set - current_players_set
+            entering = current_players_set - prev_players_set
+            # Sort for deterministic ordering
+            entering_list = sorted(entering)
             
-            for slot_idx, entry in enumerate(quarter_schedule):
-                current_playing = player in entry['players']
-                
-                if current_playing and not prev_playing:
-                    # Player coming IN
-                    row += " 🟢 IN |"
-                elif not current_playing and prev_playing:
-                    # Player going OUT
-                    row += " 🔴 OUT |"
-                elif current_playing:
-                    # Player continues playing
-                    row += " ✅ |"
+            # The number of entering players should equal leaving players
+            assert len(entering_list) == len(leaving), \
+                f"Mismatch: {len(entering_list)} entering vs {len(leaving)} leaving"
+            
+            # Update positions: keep players who stay, replace those who leave
+            entering_idx = 0
+            for pos in range(PLAYERS_ON_COURT):
+                if current_positions[pos] in leaving:
+                    # This player is leaving, replace with someone entering
+                    new_player = entering_list[entering_idx]
+                    entering_idx += 1
+                    current_positions[pos] = new_player
+                    position_rows[pos].append(new_player)
                 else:
-                    # Player on bench
-                    row += " ⬜ |"
-                
-                prev_playing = current_playing
-            
-            lines.append(row)
-        
-        lines.append("")
+                    # Player stays - empty cell
+                    position_rows[pos].append("")
+    
+    # Output the position rows
+    for pos in range(PLAYERS_ON_COURT):
+        row = "|"
+        for cell in position_rows[pos]:
+            row += f"{cell}|"
+        lines.append(row)
+    
+    lines.append("")
     
     # Per-player summary
     lines.append("## Player Minutes Summary")

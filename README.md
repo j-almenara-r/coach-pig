@@ -53,7 +53,7 @@ The CSV file includes:
 #### Markdown Format
 The Markdown file includes:
 - Summary statistics (minutes per player, stint duration)
-- Visual rotation table with checkmarks
+- Visual rotation table showing substitutions across all quarters
 - Per-player minutes summary
 
 ### Example Output
@@ -69,18 +69,16 @@ For 8 players (Pedro, Javi A., Jesús A.R., Ismael, Ana, Javi F, Jose, Sergio):
 - **Stint duration:** 2.5 minutes
 - **Number of rotations:** 16
 
-## Quarter 1
+## Rotation Table
 
-| Player | T1 | T2 | T3 | T4 |
-|--------|----|----|----|----|
-| Pedro | 🟢 IN | ✅ | 🔴 OUT | 🟢 IN |
-| Javi A. | 🟢 IN | ✅ | 🔴 OUT | 🟢 IN |
-| Jesús A.R. | 🟢 IN | 🔴 OUT | 🟢 IN | ✅ |
+| Q1T1 | Q1T2 | Q1T3 | Q1T4 | Q2T1 | Q2T2 | Q2T3 | Q2T4 | Q3T1 | Q3T2 | Q3T3 | Q3T4 | Q4T1 | Q4T2 | Q4T3 | Q4T4 |
+|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|
+|Ismael|Sergio|Ana|Sergio||Jesús A.R.||Ana||Sergio|Ana|Sergio||Jesús A.R.||Ana|
+|Javi A.||Ismael||Ana||Sergio||Jesús A.R.|Jose||Javi A.|Ana||Sergio||
 ...
 ```
 
-Legend:
-- 🟢 IN: Player enters the court
-- 🔴 OUT: Player exits the court
-- ✅: Player continues playing
-- ⬜: Player on bench
+The table uses the format Q{quarter}T{slot} (e.g., Q1T1 = Quarter 1, Time slot 1).
+- Each row represents a court position (5 rows for 5 players on court)
+- Player names appear only when there's a substitution (new player enters that position)
+- Empty cells indicate the player in that position continues playing
