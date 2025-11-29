@@ -200,31 +200,62 @@ def generate_markdown(players: List[str], filename: str = None) -> str:
     lines.append(f"- **Number of rotations:** {len(schedule)}")
     lines.append("")
     
-    # Rotation table
-    lines.append("## Rotation Schedule")
-    lines.append("")
+    # Calculate slots per quarter (using floor division for safety)
+    slots_per_quarter = int(QUARTER_DURATION // slot_duration)
     
-    # Table header
-    header = "| Slot | Quarter | Time | "
-    header += " | ".join(players)
-    header += " |"
-    lines.append(header)
-    
-    # Separator
-    separator = "|------|---------|------|"
-    separator += "|".join(["----" for _ in range(num_players)])
-    separator += "|"
-    lines.append(separator)
-    
-    # Data rows
-    for entry in schedule:
-        time_range = f"{format_time(entry['start_time'])}-{format_time(entry['end_time'])}"
-        row = f"| {entry['slot']} | Q{entry['quarter']} | {time_range} |"
+    # Generate one table per quarter showing player changes
+    for quarter in range(1, QUARTERS + 1):
+        lines.append(f"## Quarter {quarter}")
+        lines.append("")
+        
+        # Get slots for this quarter with bounds checking
+        start_slot = (quarter - 1) * slots_per_quarter
+        end_slot = min(quarter * slots_per_quarter, len(schedule))
+        quarter_schedule = schedule[start_slot:end_slot]
+        
+        # Table header with time slots
+        header = "| Player |"
+        for slot_num in range(1, len(quarter_schedule) + 1):
+            header += f" T{slot_num} |"
+        lines.append(header)
+        
+        # Separator
+        separator = "|--------|"
+        separator += "|".join(["----" for _ in range(len(quarter_schedule))])
+        separator += "|"
+        lines.append(separator)
+        
+        # Track previous slot's on-court players for change detection
+        prev_on_court = set()
+        if start_slot > 0:
+            prev_on_court = set(schedule[start_slot - 1]['players'])
+        
+        # For each player, show their status changes
         for player in players:
-            row += " ✅ |" if player in entry['players'] else " ⬜ |"
-        lines.append(row)
-    
-    lines.append("")
+            row = f"| {player} |"
+            prev_playing = player in prev_on_court
+            
+            for slot_idx, entry in enumerate(quarter_schedule):
+                current_playing = player in entry['players']
+                
+                if current_playing and not prev_playing:
+                    # Player coming IN
+                    row += " 🟢 IN |"
+                elif not current_playing and prev_playing:
+                    # Player going OUT
+                    row += " 🔴 OUT |"
+                elif current_playing:
+                    # Player continues playing
+                    row += " ✅ |"
+                else:
+                    # Player on bench
+                    row += " ⬜ |"
+                
+                prev_playing = current_playing
+            
+            lines.append(row)
+        
+        lines.append("")
     
     # Per-player summary
     lines.append("## Player Minutes Summary")

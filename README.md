@@ -69,9 +69,18 @@ For 8 players (Pedro, Javi A., Jesús A.R., Ismael, Ana, Javi F, Jose, Sergio):
 - **Stint duration:** 2.5 minutes
 - **Number of rotations:** 16
 
-| Slot | Quarter | Time | Pedro | Javi A. | Jesús A.R. | Ismael | Ana | Javi F | Jose | Sergio |
-|------|---------|------|-------|---------|------------|--------|-----|--------|------|--------|
-| 1 | Q1 | 00:00-02:30 | ✅ | ✅ | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ |
-| 2 | Q1 | 02:30-05:00 | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ✅ | ✅ | ✅ |
+## Quarter 1
+
+| Player | T1 | T2 | T3 | T4 |
+|--------|----|----|----|----|
+| Pedro | 🟢 IN | ✅ | 🔴 OUT | 🟢 IN |
+| Javi A. | 🟢 IN | ✅ | 🔴 OUT | 🟢 IN |
+| Jesús A.R. | 🟢 IN | 🔴 OUT | 🟢 IN | ✅ |
 ...
 ```
+
+Legend:
+- 🟢 IN: Player enters the court
+- 🔴 OUT: Player exits the court
+- ✅: Player continues playing
+- ⬜: Player on bench
